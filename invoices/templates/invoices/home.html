@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Aurelia — Sound design that listens back</title>
+
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          bg: '#0A0A10',
+          surface: '#12121C',
+          surface2: '#191927',
+          border: 'rgba(255,255,255,0.08)',
+          ink: '#F3F2F9',
+          muted: '#9593A8',
+          violet: '#7C5CFC',
+          teal: '#35E7C8',
+        },
+        fontFamily: {
+          display: ['"Space Grotesk"', 'sans-serif'],
+          body: ['"Manrope"', 'sans-serif'],
+        },
+      },
+    },
+  };
+</script>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Lucide icons -->
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+<!-- AOS -->
+<link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+
+<!-- GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+<style>
+  :root{
+    --violet: #7C5CFC;
+    --teal: #35E7C8;
+  }
+  * { scroll-behavior: smooth; }
+  body {
+    background-color: #0A0A10;
+    color: #F3F2F9;
+    font-family: 'Manrope', sans-serif;
+    overflow-x: hidden;
+  }
+  h1, h2, h3, .font-display { font-family: 'Space Grotesk', sans-serif; }
+
+  ::selection { background: rgba(124,92,252,0.35); color: #fff; }
+
+  /* Reduced motion respect */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Gradient text */
+  .grad-text {
+    background: linear-gradient(90deg, #7C5CFC 0%, #35E7C8 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Glass panel */
+  .glass {
+    background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.015));
+    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+  }
+
+  /* Feature card glow border on hover */
+  .feature-card {
+    transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+  }
+  .feature-card:hover {
+    transform: translateY(-6px) scale(1.015);
+    border-color: rgba(124,92,252,0.55);
+    box-shadow: 0 0 0 1px rgba(124,92,252,0.25), 0 24px 60px -20px rgba(124,92,252,0.45);
+  }
+
+  /* Glow CTA */
+  .btn-glow {
+    box-shadow: 0 0 0 0 rgba(124,92,252,0.6);
+    transition: box-shadow 0.35s ease, transform 0.25s ease, background 0.35s ease;
+  }
+  .btn-glow:hover {
+    box-shadow: 0 0 40px 4px rgba(124,92,252,0.55);
+    transform: translateY(-2px);
+  }
+  .btn-ghost {
+    transition: border-color 0.3s ease, background 0.3s ease, transform 0.25s ease;
+  }
+  .btn-ghost:hover {
+    border-color: rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.06);
+    transform: translateY(-2px);
+  }
+
+  /* Floating orbs */
+  .orb {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(70px);
+    opacity: 0.55;
+    pointer-events: none;
+    will-change: transform;
+  }
+  @keyframes float-a {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(30px, -40px) scale(1.08); }
+  }
+  @keyframes float-b {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-40px, 30px) scale(1.12); }
+  }
+  .orb-1 { animation: float-a 11s ease-in-out infinite; }
+  .orb-2 { animation: float-b 13s ease-in-out infinite; }
+
+  /* Nav link underline */
+  .nav-link {
+    position: relative;
+  }
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0; bottom: -4px;
+    width: 0%; height: 1px;
+    background: linear-gradient(90deg, #7C5CFC, #35E7C8);
+    transition: width 0.3s ease;
+  }
+  .nav-link:hover::after { width: 100%; }
+
+  /* Waveform draw */
+  .wave-path {
+    stroke-dasharray: 1400;
+    stroke-dashoffset: 1400;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: #0A0A10; }
+  ::-webkit-scrollbar-thumb { background: #26263A; border-radius: 8px; }
+  ::-webkit-scrollbar-thumb:hover { background: #33334C; }
+
+  /* Focus visibility */
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid #35E7C8;
+    outline-offset: 3px;
+  }
+</style>
+</head>
+
+<body class="bg-bg text-ink font-body antialiased">
+
+<!-- NAVBAR -->
+<header class="fixed top-0 inset-x-0 z-50 border-b border-border bg-bg/60 backdrop-blur-xl">
+  <div class="max-w-7xl mx-auto px-6 lg:px-10 h-18 flex items-center justify-between py-4">
+    <a href="#top" class="flex items-center gap-2.5">
+      <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-violet to-teal flex items-center justify-center">
+        <i data-lucide="audio-waveform" class="w-4.5 h-4.5 text-bg"></i>
+      </span>
+      <span class="font-display text-lg tracking-tight">Aurelia</span>
+    </a>
+
+    <nav class="hidden md:flex items-center gap-9 text-sm text-muted">
+      <a href="#engine" class="nav-link hover:text-ink transition-colors">Engine</a>
+      <a href="#features" class="nav-link hover:text-ink transition-colors">Capabilities</a>
+      <a href="#showcase" class="nav-link hover:text-ink transition-colors">Inside the engine</a>
+      <a href="#get-started" class="nav-link hover:text-ink transition-colors">Pricing</a>
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <a href="#" class="hidden sm:inline-flex text-sm text-muted hover:text-ink transition-colors px-2">Sign in</a>
+      <a href="#get-started" class="btn-glow inline-flex items-center gap-2 text-sm font-medium bg-gradient-to-r from-violet to-teal text-bg px-4 py-2.5 rounded-full">
+        Start creating
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section id="top" class="relative min-h-screen flex items-center pt-28 pb-20 overflow-hidden">
+  <div class="orb orb-1 w-[420px] h-[420px] bg-violet top-10 -left-32"></div>
+  <div class="orb orb-2 w-[380px] h-[380px] bg-teal bottom-0 right-0"></div>
+
+  <div class="max-w-7xl mx-auto px-6 lg:px-10 grid lg:grid-cols-2 gap-16 items-center relative z-10">
+    <div>
+      <p class="text-sm text-muted mb-5" data-aos="fade-up">A spatial synthesis engine, built for producers who hear in three dimensions</p>
+      <h1 class="font-display text-5xl sm:text-6xl leading-[1.05] tracking-tight mb-6" data-aos="fade-up" data-aos-delay="80">
+        Sound design that <span class="grad-text">listens back.</span>
+      </h1>
+      <p class="text-lg text-muted max-w-md mb-9 leading-relaxed" data-aos="fade-up" data-aos-delay="160">
+        Aurelia reads the shape of your performance and reshapes its own harmonics in real time — no menus, no presets to hunt through, just sound that follows your hands.
+      </p>
+      <div class="flex flex-wrap items-center gap-4" data-aos="fade-up" data-aos-delay="240">
+        <a href="#get-started" class="btn-glow inline-flex items-center gap-2 bg-gradient-to-r from-violet to-teal text-bg font-medium px-6 py-3.5 rounded-full">
+          Start creating
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </a>
+        <a href="#showcase" class="btn-ghost inline-flex items-center gap-2 border border-border text-ink font-medium px-6 py-3.5 rounded-full">
+          <i data-lucide="play" class="w-4 h-4"></i>
+          Watch it play
+        </a>
+      </div>
+    </div>
+
+    <div class="relative" data-aos="fade-up" data-aos-delay="120">
+      <div id="hero-panel" class="glass rounded-3xl p-8 sm:p-10">
+        <div class="flex items-center justify-between mb-8">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-teal"></span>
+            <span class="text-sm text-muted">Live input · Channel 3</span>
+          </div>
+          <i data-lucide="sliders-horizontal" class="w-4 h-4 text-muted"></i>
+        </div>
+        <svg id="hero-wave" viewBox="0 0 500 180" class="w-full h-40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path class="wave-path" d="M0 90 C 30 30, 60 150, 90 90 S 150 20, 180 90 S 240 160, 270 90 S 330 10, 360 90 S 420 150, 450 90 S 500 90, 500 90"
+            stroke="url(#waveGrad)" stroke-width="3" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="waveGrad" x1="0" y1="0" x2="500" y2="0" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#7C5CFC"/>
+              <stop offset="100%" stop-color="#35E7C8"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="grid grid-cols-3 gap-4 mt-8 pt-6 border-t border-border">
+          <div>
+            <p class="font-display text-2xl">128</p>
+            <p class="text-xs text-muted mt-1">Voices in parallel</p>
+          </div>
+          <div>
+            <p class="font-display text-2xl">2.4ms</p>
+            <p class="text-xs text-muted mt-1">Round-trip latency</p>
+          </div>
+          <div>
+            <p class="font-display text-2xl">40+</p>
+            <p class="text-xs text-muted mt-1">Spatial fields</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" class="relative py-28 border-t border-border">
+  <div class="max-w-7xl mx-auto px-6 lg:px-10">
+    <div class="max-w-xl mb-16" data-aos="fade-up">
+      <h2 class="font-display text-4xl tracking-tight mb-4">Four ways it shapes sound</h2>
+      <p class="text-muted text-lg leading-relaxed">Each part of the engine works on its own, but they're built to talk to each other while you play.</p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div class="feature-card glass rounded-2xl p-7" data-aos="fade-up" data-aos-delay="0">
+        <div class="w-11 h-11 rounded-xl bg-violet/15 flex items-center justify-center mb-6">
+          <i data-lucide="brain-circuit" class="w-5 h-5 text-violet"></i>
+        </div>
+        <h3 class="font-display text-lg mb-2.5">Adaptive engine</h3>
+        <p class="text-sm text-muted leading-relaxed">Tracks velocity, pressure, and timing, then adjusts timbre continuously instead of snapping between fixed states.</p>
+      </div>
+
+      <div class="feature-card glass rounded-2xl p-7" data-aos="fade-up" data-aos-delay="80">
+        <div class="w-11 h-11 rounded-xl bg-teal/15 flex items-center justify-center mb-6">
+          <i data-lucide="orbit" class="w-5 h-5 text-teal"></i>
+        </div>
+        <h3 class="font-display text-lg mb-2.5">Spatial field</h3>
+        <p class="text-sm text-muted leading-relaxed">Places every voice in a three-dimensional field so layered patches stay distinct instead of collapsing into mud.</p>
+      </div>
+
+      <div class="feature-card glass rounded-2xl p-7" data-aos="fade-up" data-aos-delay="160">
+        <div class="w-11 h-11 rounded-xl bg-violet/15 flex items-center justify-center mb-6">
+          <i data-lucide="waves" class="w-5 h-5 text-violet"></i>
+        </div>
+        <h3 class="font-display text-lg mb-2.5">Live morphing</h3>
+        <p class="text-sm text-muted leading-relaxed">Draw a path between two sounds and Aurelia performs the transition in real time, with no audible seams.</p>
+      </div>
+
+      <div class="feature-card glass rounded-2xl p-7" data-aos="fade-up" data-aos-delay="240">
+        <div class="w-11 h-11 rounded-xl bg-teal/15 flex items-center justify-center mb-6">
+          <i data-lucide="sparkles" class="w-5 h-5 text-teal"></i>
+        </div>
+        <h3 class="font-display text-lg mb-2.5">Preset intelligence</h3>
+        <p class="text-sm text-muted leading-relaxed">Learns from the patches you keep and starts suggesting variations tuned to your own sound, not a generic library.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SHOWCASE / ENGINE -->
+<section id="showcase" class="relative py-28 border-t border-border overflow-hidden">
+  <div class="orb w-[460px] h-[460px] bg-violet/70 top-1/2 -translate-y-1/2 -right-40" style="animation: float-b 15s ease-in-out infinite;"></div>
+
+  <div class="max-w-7xl mx-auto px-6 lg:px-10 relative z-10 grid lg:grid-cols-2 gap-16 items-center">
+    <div data-aos="fade-up">
+      <h2 class="font-display text-4xl tracking-tight mb-5">Built around a single oscillator core</h2>
+      <p class="text-muted text-lg leading-relaxed mb-8 max-w-lg">Most engines stack effects on top of a static waveform. Aurelia does it in reverse — the oscillator itself deforms in response to what you play, so the character of the sound and the way you shape it come from the same source.</p>
+      <ul class="space-y-4">
+        <li class="flex items-start gap-3">
+          <i data-lucide="check" class="w-5 h-5 text-teal mt-0.5 shrink-0"></i>
+          <span class="text-muted">One core, no bolted-on effects chain to fight with</span>
+        </li>
+        <li class="flex items-start gap-3">
+          <i data-lucide="check" class="w-5 h-5 text-teal mt-0.5 shrink-0"></i>
+          <span class="text-muted">Full MPE support across every controller we've tested</span>
+        </li>
+        <li class="flex items-start gap-3">
+          <i data-lucide="check" class="w-5 h-5 text-teal mt-0.5 shrink-0"></i>
+          <span class="text-muted">Runs natively on CPU — no dedicated GPU required</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="glass rounded-3xl p-8" data-aos="fade-up" data-aos-delay="100">
+      <div class="grid grid-cols-2 gap-4">
+        <div class="rounded-2xl bg-surface2/60 border border-border p-6">
+          <i data-lucide="cpu" class="w-5 h-5 text-violet mb-4"></i>
+          <p class="font-display text-xl mb-1">Oscillator core</p>
+          <p class="text-xs text-muted">Deforms per-note, per-gesture</p>
+        </div>
+        <div class="rounded-2xl bg-surface2/60 border border-border p-6">
+          <i data-lucide="move-3d" class="w-5 h-5 text-teal mb-4"></i>
+          <p class="font-display text-xl mb-1">Spatial layer</p>
+          <p class="text-xs text-muted">Positions voices in 3D</p>
+        </div>
+        <div class="rounded-2xl bg-surface2/60 border border-border p-6">
+          <i data-lucide="git-branch" class="w-5 h-5 text-violet mb-4"></i>
+          <p class="font-display text-xl mb-1">Morph paths</p>
+          <p class="text-xs text-muted">Blends between patches</p>
+        </div>
+        <div class="rounded-2xl bg-surface2/60 border border-border p-6">
+          <i data-lucide="database" class="w-5 h-5 text-teal mb-4"></i>
+          <p class="font-display text-xl mb-1">Preset memory</p>
+          <p class="text-xs text-muted">Adapts to your library</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BANNER -->
+<section id="get-started" class="relative py-24 border-t border-border">
+  <div class="max-w-5xl mx-auto px-6 lg:px-10">
+    <div class="glass rounded-3xl px-8 py-14 sm:px-16 text-center relative overflow-hidden" data-aos="fade-up">
+      <div class="orb w-[300px] h-[300px] bg-teal/60 -bottom-24 left-1/2 -translate-x-1/2"></div>
+      <div class="relative z-10">
+        <h2 class="font-display text-3xl sm:text-4xl tracking-tight mb-4">Ready to hear it?</h2>
+        <p class="text-muted text-lg mb-9 max-w-md mx-auto leading-relaxed">Aurelia runs as a plugin inside your existing DAW. Try the full engine for 21 days, no card required.</p>
+        <div class="flex flex-wrap items-center justify-center gap-4">
+          <a href="#" class="btn-glow inline-flex items-center gap-2 bg-gradient-to-r from-violet to-teal text-bg font-medium px-7 py-3.5 rounded-full">
+            Start creating
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </a>
+          <a href="#" class="btn-ghost inline-flex items-center gap-2 border border-border text-ink font-medium px-7 py-3.5 rounded-full">
+            Compare plans
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="border-t border-border pt-16 pb-10">
+  <div class="max-w-7xl mx-auto px-6 lg:px-10">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-10 pb-14">
+      <div class="lg:col-span-2">
+        <a href="#top" class="flex items-center gap-2.5 mb-4">
+          <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-violet to-teal flex items-center justify-center">
+            <i data-lucide="audio-waveform" class="w-4.5 h-4.5 text-bg"></i>
+          </span>
+          <span class="font-display text-lg">Aurelia</span>
+        </a>
+        <p class="text-sm text-muted max-w-xs leading-relaxed mb-6">A spatial synthesis engine for producers, sound designers, and composers who want their instrument to respond, not just play back.</p>
+        <div class="flex items-center gap-3">
+          <a href="#" aria-label="Twitter" class="w-9 h-9 rounded-full border border-border flex items-center justify-center hover:border-violet/60 hover:text-violet transition-colors">
+            <i data-lucide="twitter" class="w-4 h-4"></i>
+          </a>
+          <a href="#" aria-label="Instagram" class="w-9 h-9 rounded-full border border-border flex items-center justify-center hover:border-violet/60 hover:text-violet transition-colors">
+            <i data-lucide="instagram" class="w-4 h-4"></i>
+          </a>
+          <a href="#" aria-label="YouTube" class="w-9 h-9 rounded-full border border-border flex items-center justify-center hover:border-violet/60 hover:text-violet transition-colors">
+            <i data-lucide="youtube" class="w-4 h-4"></i>
+          </a>
+          <a href="#" aria-label="GitHub" class="w-9 h-9 rounded-full border border-border flex items-center justify-center hover:border-violet/60 hover:text-violet transition-colors">
+            <i data-lucide="github" class="w-4 h-4"></i>
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <p class="text-sm font-medium mb-4">Product</p>
+        <ul class="space-y-3 text-sm text-muted">
+          <li><a href="#engine" class="hover:text-ink transition-colors">Engine</a></li>
+          <li><a href="#features" class="hover:text-ink transition-colors">Capabilities</a></li>
+          <li><a href="#showcase" class="hover:text-ink transition-colors">Inside the engine</a></li>
+          <li><a href="#get-started" class="hover:text-ink transition-colors">Pricing</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <p class="text-sm font-medium mb-4">Resources</p>
+        <ul class="space-y-3 text-sm text-muted">
+          <li><a href="#" class="hover:text-ink transition-colors">Documentation</a></li>
+          <li><a href="#" class="hover:text-ink transition-colors">Patch library</a></li>
+          <li><a href="#" class="hover:text-ink transition-colors">Community</a></li>
+          <li><a href="#" class="hover:text-ink transition-colors">Support</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <p class="text-sm font-medium mb-4">Company</p>
+        <ul class="space-y-3 text-sm text-muted">
+          <li><a href="#" class="hover:text-ink transition-colors">About</a></li>
+          <li><a href="#" class="hover:text-ink transition-colors">Careers</a></li>
+          <li><a href="#" class="hover:text-ink transition-colors">Privacy</a></li>
+          <li><a href="#" class="hover:text-ink transition-colors">Terms</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-xs text-muted">© 2026 Aurelia Audio. All rights reserved.</p>
+      <p class="text-xs text-muted">Made for producers who hear in three dimensions.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Lucide icons
+  lucide.createIcons();
+
+  // AOS init
+  AOS.init({
+    duration: 700,
+    easing: 'ease-out-cubic',
+    once: true,
+    offset: 60,
+  });
+
+  // GSAP: draw hero waveform on load
+  window.addEventListener('load', () => {
+    gsap.to('.wave-path', {
+      strokeDashoffset: 0,
+      duration: 1.8,
+      ease: 'power2.out',
+      delay: 0.3,
+    });
+    gsap.from('#hero-panel', {
+      opacity: 0,
+      y: 20,
+      duration: 0.9,
+      ease: 'power2.out',
+      delay: 0.1,
+    });
+  });
+
+  // GSAP: subtle parallax on hero orbs following the cursor
+  const orbs = document.querySelectorAll('.orb-1, .orb-2');
+  const xTo = [], yTo = [];
+  orbs.forEach((orb) => {
+    xTo.push(gsap.quickTo(orb, 'x', { duration: 1.2, ease: 'power3.out' }));
+    yTo.push(gsap.quickTo(orb, 'y', { duration: 1.2, ease: 'power3.out' }));
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    const relX = (e.clientX / window.innerWidth - 0.5);
+    const relY = (e.clientY / window.innerHeight - 0.5);
+    orbs.forEach((orb, i) => {
+      const strength = i === 0 ? 40 : -30;
+      xTo[i](relX * strength);
+      yTo[i](relY * strength);
+    });
+  });
+
+  // Sticky navbar shadow on scroll
+  const header = document.querySelector('header');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 10) {
+      header.classList.add('shadow-lg', 'shadow-black/20');
+    } else {
+      header.classList.remove('shadow-lg', 'shadow-black/20');
+    }
+  });
+</script>
+
+</body>
+</html>

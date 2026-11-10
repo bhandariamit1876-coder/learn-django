@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at 15% 15%, rgba(139, 92, 246, 0.25) 0%, transparent 45%),
+                        radial-gradient(circle at 85% 85%, rgba(59, 130, 246, 0.25) 0%, transparent 45%),
+                        radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 60%),
+                        #0b0d19;
+            min-height: 100vh;
+        }
+
+        .glass-card {
+            background: rgba(19, 21, 41, 0.65);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            box-shadow: 0 25px 50px -12px rgba(15, 10, 30, 0.7),
+                        0 0 40px rgba(124, 58, 237, 0.15);
+        }
+
+        /* Input Glowing Focus Effects */
+        .glow-input {
+            background: rgba(15, 17, 35, 0.7);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glow-input:focus {
+            border-color: #a855f7;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.35), inset 0 0 10px rgba(139, 92, 246, 0.15);
+        }
+
+        .input-group:focus-within label {
+            color: #c084fc;
+        }
+
+        .input-group:focus-within i {
+            color: #c084fc;
+        }
+
+        /* Smooth strength bar transition */
+        .strength-bar {
+            transition: width 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Purple-to-Blue Vibrant Gradient Button */
+        .btn-gradient {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 50%, #3b82f6 100%);
+            background-size: 200% 200%;
+            transition: all 0.3s ease;
+        }
+        .btn-gradient:hover {
+            background-position: right center;
+            box-shadow: 0 8px 25px -5px rgba(139, 92, 246, 0.5), 0 0 15px rgba(59, 130, 246, 0.3);
+            transform: translateY(-2px);
+        }
+        .btn-gradient:active {
+            transform: translateY(0);
+        }
+
+        /* Social buttons purple hover glow */
+        .btn-social {
+            background: rgba(20, 23, 45, 0.6);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            transition: all 0.25s ease;
+        }
+        .btn-social:hover {
+            border-color: rgba(168, 85, 247, 0.6);
+            background: rgba(35, 30, 65, 0.7);
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.25);
+            transform: translateY(-2px);
+        }
+
+        /* Floating background blobs */
+        @keyframes blobFloat {
+            0%, 100% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.95); }
+        }
+        .animate-blob-1 {
+            animation: blobFloat 10s infinite ease-in-out;
+        }
+        .animate-blob-2 {
+            animation: blobFloat 12s infinite ease-in-out reverse;
+        }
+
+        /* Toast Animation */
+        @keyframes slideIn {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .toast-animate {
+            animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-4 sm:p-6 lg:p-8 text-slate-200 min-h-screen relative overflow-x-hidden">
+
+    <!-- Background Animated Purplish-Bluish Glows -->
+    <div class="fixed top-10 left-10 w-80 h-80 bg-purple-600/30 rounded-full filter blur-[100px] pointer-events-none -z-10 animate-blob-1"></div>
+    <div class="fixed bottom-10 right-10 w-96 h-96 bg-blue-600/25 rounded-full filter blur-[120px] pointer-events-none -z-10 animate-blob-2"></div>
+    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-indigo-600/20 rounded-full filter blur-[140px] pointer-events-none -z-10"></div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- MAIN SIGN UP CONTAINER -->
+    <main class="w-full max-w-md my-6">
+        <div class="glass-card rounded-3xl p-6 sm:p-8 space-y-6">
+            
+            <!-- Header Section -->
+            <div class="text-center space-y-2">
+                <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-violet-600/20 to-blue-600/20 border border-purple-500/30 text-violet-400 shadow-[0_0_20px_rgba(139,92,246,0.2)] mb-2">
+                    <i class="fa-solid fa-user-plus text-2xl"></i>
+                </div>
+                <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-white bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-100 to-purple-200">Create your account</h1>
+                <p class="text-sm text-slate-400">Join our modern purplish-bluish community</p>
+            </div>
+
+            <!-- Social Signup Options -->
+            <div class="grid grid-cols-3 gap-3">
+                <button type="button" onclick="handleSocialAuth('Google')" class="btn-social flex items-center justify-center py-2.5 px-4 rounded-xl group">
+                    <i class="fa-brands fa-google text-slate-300 group-hover:text-purple-300 group-hover:scale-110 transition-transform"></i>
+                </button>
+                <button type="button" onclick="handleSocialAuth('GitHub')" class="btn-social flex items-center justify-center py-2.5 px-4 rounded-xl group">
+                    <i class="fa-brands fa-github text-slate-300 group-hover:text-purple-300 group-hover:scale-110 transition-transform"></i>
+                </button>
+                <button type="button" onclick="handleSocialAuth('Apple')" class="btn-social flex items-center justify-center py-2.5 px-4 rounded-xl group">
+                    <i class="fa-brands fa-apple text-slate-300 group-hover:text-purple-300 group-hover:scale-110 transition-transform"></i>
+                </button>
+            </div>
+
+            <!-- Divider -->
+            <div class="relative flex items-center justify-center">
+                <div class="border-t border-purple-900/50 w-full"></div>
+                <span class="bg-[#0f1124] px-3 text-xs text-slate-400 uppercase tracking-wider absolute rounded-full border border-purple-800/40">Or continue with email</span>
+            </div>
+
+            <form id="signup-form" class="space-y-4" novalidate>
+                
+                <!-- Full Name Field -->
+                <div class="input-group space-y-1">
+                    <label for="fullname" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 transition-colors">Full Name</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                            <i class="fa-regular fa-user text-slate-500 transition-colors"></i>
+                        </div>
+                        <input type="text" id="fullname" placeholder="John Doe" required
+                            class="glow-input w-full pl-10 pr-4 py-2.5 rounded-xl focus:outline-none text-sm placeholder-slate-500 text-white">
+                    </div>
+                    <p id="name-error" class="hidden text-xs text-rose-400 mt-1"></p>
+                </div>
+
+                <!-- Email Field -->
+                <div class="input-group space-y-1">
+                    <label for="email" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 transition-colors">Email Address</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                            <i class="fa-regular fa-envelope text-slate-500 transition-colors"></i>
+                        </div>
+                        <input type="email" id="email" placeholder="name@company.com" required
+                            class="glow-input w-full pl-10 pr-4 py-2.5 rounded-xl focus:outline-none text-sm placeholder-slate-500 text-white">
+                    </div>
+                    <p id="email-error" class="hidden text-xs text-rose-400 mt-1"></p>
+                </div>
+
+                <!-- Password Field -->
+                <div class="input-group space-y-1">
+                    <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 transition-colors">Password</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-lock text-slate-500 transition-colors"></i>
+                        </div>
+                        <input type="password" id="password" placeholder="••••••••" required
+                            class="glow-input w-full pl-10 pr-10 py-2.5 rounded-xl focus:outline-none text-sm placeholder-slate-500 text-white">
+                        <button type="button" onclick="togglePasswordVisibility('password', 'toggle-pass-icon')" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-500 hover:text-purple-300 focus:outline-none">
+                            <i id="toggle-pass-icon" class="fa-regular fa-eye"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Password Strength Indicator -->
+                    <div class="space-y-1.5 pt-1">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-slate-400">Strength:</span>
+                            <span id="strength-text" class="font-medium text-slate-500">Too Short</span>
+                        </div>
+                        <div class="w-full bg-slate-900/80 h-1.5 rounded-full overflow-hidden border border-purple-900/30">
+                            <div id="strength-bar" class="strength-bar h-full w-0 bg-rose-500"></div>
+                        </div>
+                    </div>
+                    <p id="password-error" class="hidden text-xs text-rose-400 mt-1"></p>
+                </div>
+
+                <!-- Confirm Password Field -->
+                <div class="input-group space-y-1">
+                    <label for="confirm-password" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 transition-colors">Confirm Password</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-shield-halved text-slate-500 transition-colors"></i>
+                        </div>
+                        <input type="password" id="confirm-password" placeholder="••••••••" required
+                            class="glow-input w-full pl-10 pr-10 py-2.5 rounded-xl focus:outline-none text-sm placeholder-slate-500 text-white">
+                        <button type="button" onclick="togglePasswordVisibility('confirm-password', 'toggle-confirm-icon')" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-500 hover:text-purple-300 focus:outline-none">
+                            <i id="toggle-confirm-icon" class="fa-regular fa-eye"></i>
+                        </button>
+                    </div>
+                    <p id="confirm-error" class="hidden text-xs text-rose-400 mt-1"></p>
+                </div>
+
+                <!-- Terms & Conditions Checkbox -->
+                <div class="flex items-start gap-2 pt-1">
+                    <div class="flex items-center h-5">
+                        <input id="terms" type="checkbox" required class="w-4 h-4 rounded bg-slate-900 border-purple-800 text-purple-600 focus:ring-purple-500 focus:ring-offset-slate-900">
+                    </div>
+                    <label for="terms" class="text-xs text-slate-400 leading-tight select-none">
+                        I agree to the <a href="#" class="text-purple-400 hover:text-purple-300 hover:underline">Terms of Service</a> and <a href="#" class="text-purple-400 hover:text-purple-300 hover:underline">Privacy Policy</a>.
+                    </label>
+                </div>
+                <p id="terms-error" class="hidden text-xs text-rose-400"></p>
+
+                <!-- Submit Button -->
+                <button type="submit" class="w-full btn-gradient text-white font-medium py-2.5 rounded-xl shadow-lg transition-all duration-200 flex items-center justify-center gap-2 group mt-2">
+                    <span>Create Account</span>
+                    <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
+                </button>
+            </form>
+
+            <!-- Card Footer -->
+            <p class="text-center text-xs text-slate-400">
+                Already have an account? 
+                <a href="#" class="font-medium text-violet-400 hover:text-violet-300 hover:underline transition-colors">Sign in</a>
+            </p>
+
+        </div>
+    </main>
+
+    <script>
+        // Form Elements
+        const signupForm = document.getElementById('signup-form');
+        const fullnameInput = document.getElementById('fullname');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirm-password');
+        const termsCheckbox = document.getElementById('terms');
+
+        const strengthBar = document.getElementById('strength-bar');
+        const strengthText = document.getElementById('strength-text');
+
+        // Toggle Password Visibility
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        // Real-time Password Strength Check with purplish-bluish palette
+        passwordInput.addEventListener('input', () => {
+            const val = passwordInput.value;
+            let score = 0;
+
+            if (val.length === 0) {
+                strengthBar.style.width = '0%';
+                strengthText.innerText = 'Too Short';
+                strengthText.className = 'font-medium text-slate-500';
+                return;
+            }
+
+            // Strength Criteria
+            if (val.length >= 8) score += 1;
+            if (/[A-Z]/.test(val)) score += 1;
+            if (/[0-9]/.test(val)) score += 1;
+            if (/[^A-Za-z0-9]/.test(val)) score += 1;
+
+            // Render strength visually with bluish-purplish neon hues
+            switch (score) {
+                case 1:
+                    strengthBar.style.width = '25%';
+                    strengthBar.className = 'strength-bar h-full bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.5)]';
+                    strengthText.innerText = 'Weak';
+                    strengthText.className = 'font-medium text-rose-400';
+                    break;
+                case 2:
+                    strengthBar.style.width = '50%';
+                    strengthBar.className = 'strength-bar h-full bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]';
+                    strengthText.innerText = 'Fair';
+                    strengthText.className = 'font-medium text-indigo-400';
+                    break;
+                case 3:
+                    strengthBar.style.width = '75%';
+                    strengthBar.className = 'strength-bar h-full bg-violet-500 shadow-[0_0_10px_rgba(139,92,246,0.5)]';
+                    strengthText.innerText = 'Good';
+                    strengthText.className = 'font-medium text-violet-400';
+                    break;
+                case 4:
+                    strengthBar.style.width = '100%';
+                    strengthBar.className = 'strength-bar h-full bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.7)]';
+                    strengthText.innerText = 'Strong';
+                    strengthText.className = 'font-medium text-cyan-300';
+                    break;
+            }
+
+            if (confirmPasswordInput.value.length > 0) {
+                validateConfirmPassword();
+            }
+        });
+
+        // Real-time Confirm Password Validation
+        confirmPasswordInput.addEventListener('input', validateConfirmPassword);
+
+        function validateConfirmPassword() {
+            const confirmError = document.getElementById('confirm-error');
+            if (confirmPasswordInput.value !== passwordInput.value) {
+                showError(confirmPasswordInput, confirmError, 'Passwords do not match');
+                return false;
+            } else {
+                clearError(confirmPasswordInput, confirmError);
+                return true;
+            }
+        }
+
+        // Email Format Helper
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        // Display Helper Errors
+        function showError(inputEl, errorEl, message) {
+            inputEl.classList.add('border-rose-500');
+            errorEl.innerText = message;
+            errorEl.classList.remove('hidden');
+        }
+
+        function clearError(inputEl, errorEl) {
+            inputEl.classList.remove('border-rose-500');
+            errorEl.innerText = '';
+            errorEl.classList.add('hidden');
+        }
+
+        // Form Submit Handler
+        signupForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            let isValid = true;
+
+            // Validate Full Name
+            const nameError = document.getElementById('name-error');
+            if (!fullnameInput.value.trim()) {
+                showError(fullnameInput, nameError, 'Full name is required');
+                isValid = false;
+            } else {
+                clearError(fullnameInput, nameError);
+            }
+
+            // Validate Email
+            const emailError = document.getElementById('email-error');
+            if (!emailInput.value.trim()) {
+                showError(emailInput, emailError, 'Email address is required');
+                isValid = false;
+            } else if (!isValidEmail(emailInput.value.trim())) {
+                showError(emailInput, emailError, 'Please enter a valid email address');
+                isValid = false;
+            } else {
+                clearError(emailInput, emailError);
+            }
+
+            // Validate Password
+            const passwordError = document.getElementById('password-error');
+            if (!passwordInput.value) {
+                showError(passwordInput, passwordError, 'Password is required');
+                isValid = false;
+            } else if (passwordInput.value.length < 8) {
+                showError(passwordInput, passwordError, 'Password must be at least 8 characters');
+                isValid = false;
+            } else {
+                clearError(passwordInput, passwordError);
+            }
+
+            // Validate Confirm Password
+            if (!validateConfirmPassword()) {
+                isValid = false;
+            }
+
+            // Validate Terms
+            const termsError = document.getElementById('terms-error');
+            if (!termsCheckbox.checked) {
+                termsError.innerText = 'You must accept the Terms and Conditions';
+                termsError.classList.remove('hidden');
+                isValid = false;
+            } else {
+                termsError.innerText = '';
+                termsError.classList.add('hidden');
+            }
+
+            if (isValid) {
+                showToast('Account created successfully!', 'success');
+                signupForm.reset();
+                strengthBar.style.width = '0%';
+                strengthText.innerText = 'Too Short';
+                strengthText.className = 'font-medium text-slate-500';
+            }
+        });
+
+        // Social Button Handler
+        function handleSocialAuth(provider) {
+            showToast(`Connecting to ${provider}...`, 'info');
+        }
+
+        // Toast Notification System
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const bgColor = type === 'success' ? 'bg-gradient-to-r from-violet-600 to-indigo-600' : 'bg-gradient-to-r from-blue-600 to-purple-600';
+            const icon = type === 'success' ? 'fa-circle-check' : 'fa-circle-info';
+
+            toast.className = `${bgColor} text-white text-sm px-4 py-3 rounded-xl shadow-lg border border-purple-400/30 flex items-center gap-2 pointer-events-auto toast-animate`;
+            toast.innerHTML = `<i class="fa-solid ${icon}"></i><span>${message}</span>`;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

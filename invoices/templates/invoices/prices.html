@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Dev Services & Pricing</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f6ff',
+                            100: '#e0edff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0f19;
+            color: #f3f4f6;
+            overflow-x: hidden;
+        }
+
+        .glass-card {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-nav {
+            background: rgba(11, 15, 25, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #60a5fa 0%, #a855f7 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gradient-border-card {
+            position: relative;
+            border-radius: 1.5rem;
+            background: rgba(17, 24, 39, 0.85);
+        }
+
+        .gradient-border-card::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: 1.56rem;
+            padding: 1px;
+            background: linear-gradient(135deg, #3b82f6, #a855f7, #ec4899);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .glow-effect {
+            box-shadow: 0 0 40px -10px rgba(59, 130, 246, 0.3);
+        }
+
+        .price-transition {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white">
+
+    <header class="fixed top-0 left-0 right-0 z-50 glass-nav">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a href="#" class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-purple-600 flex items-center justify-center font-bold text-xl text-white shadow-lg shadow-blue-500/30">
+                    &lt;/&gt;
+                </div>
+                <span class="text-xl font-bold tracking-tight text-white">DevEngine<span class="text-blue-500">.io</span></span>
+            </a>
+            
+            <nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-300">
+                <a href="#services" class="hover:text-blue-400 transition-colors">Services</a>
+                <a href="#pricing" class="hover:text-blue-400 transition-colors">Pricing</a>
+                <a href="#tech" class="hover:text-blue-400 transition-colors">Stack</a>
+                <a href="#faq" class="hover:text-blue-400 transition-colors">FAQ</a>
+            </nav>
+
+            <div class="flex items-center space-x-4">
+                <a href="#pricing" class="px-5 py-2.5 rounded-full text-sm font-semibold bg-white/10 hover:bg-white/20 text-white transition-all border border-white/10">
+                    Get Started
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-32 pb-20">
+        <section class="max-w-5xl mx-auto text-center px-6 mb-16">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold uppercase tracking-widest mb-6">
+                <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span> Scalable Backend Solutions
+            </div>
+            <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight">
+                Transparent Pricing for <br/>
+                <span class="gradient-text">High-Performance APIs & Architecture</span>
+            </h1>
+            <p class="text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed">
+                Choose a flexible plan designed for modern web apps, robust backend infrastructure, microservices, and custom database integrations.
+            </p>
+
+            <div class="mt-12 flex items-center justify-center gap-4">
+                <span class="text-sm font-medium text-gray-300" id="monthly-label">Monthly Billing</span>
+                <button id="toggle-btn" type="button" class="relative inline-flex h-8 w-16 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-800 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900" role="switch" aria-checked="false">
+                    <span id="toggle-circle" class="pointer-events-none inline-block h-7 w-7 transform rounded-full bg-blue-500 shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
+                </button>
+                <div class="flex items-center gap-2">
+                    <span class="text-sm font-medium text-gray-400" id="yearly-label">Annual Billing</span>
+                    <span class="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">Save 20%</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="pricing" class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+            
+            <!-- Tier 1: Starter / API MVP -->
+            <div class="glass-card rounded-3xl p-8 flex flex-col justify-between hover:border-gray-600 transition-all duration-300">
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-white">Starter Backend</h3>
+                        <span class="text-xs font-medium text-gray-400 bg-gray-800 px-3 py-1 rounded-full">MVPs & Prototypes</span>
+                    </div>
+                    <p class="text-sm text-gray-400 mb-6">Essential REST API setup and database schema for small projects.</p>
+                    
+                    <div class="mb-8 flex items-baseline">
+                        <span class="text-4xl font-extrabold text-white tracking-tight price-amount" data-monthly="499" data-yearly="399">$499</span>
+                        <span class="text-gray-400 text-sm ml-2 font-medium billing-period">/ month</span>
+                    </div>
+
+                    <ul class="space-y-4 text-sm text-gray-300 border-t border-gray-800 pt-6 mb-8">
+                        <li class="flex items-center gap-3">
+                            <svg class="w-5 h-5 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <span>Up to 5 Django / FastAPI endpoints</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <svg class="w-5 h-5 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <span>PostgreSQL / SQLite Database setup</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <svg class="w-5 h-5 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <span>Basic Authentication (JWT/Session)</span>
+                        </li>
+                        <li class="flex items-center gap-3 text-gray-500 line-through">
+                            <svg class="w-5 h-5 text-gray-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            <span>Redis Caching Integration</span>
+                        </li>
+                        <li class="flex items-center gap-3 text-gray-500 line-through">
+                            <svg class="w-5 h-5 text-gray-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            <span>24/7 Priority Maintenance</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <button onclick="openPlanModal('Starter Backend')" class="w-full py-3.5 px-6 rounded-xl font-semibold bg-gray-800 hover:bg-gray-700 text-white transition-all text-sm border border-gray-700">
+                    Select Starter Plan
+                </button>
+            </div>
+
+            <!-- Tier 2: Pro Production Systems (Highlighted) -->
+            <div class="gradient-border-card p-8 flex flex-col justify-between glow-effect relative transform md:-translate-y-2">
+                <div class="absolute -top-3.5 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs font-bold px-4 py-1 rounded-full uppercase tracking-wider shadow-md">
+                    Most Popular
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-white">Full Stack & API</h3>
+                        <span class="text-xs font-medium text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full">Scaling Apps</span>
+                    </div>
+                    <p class="text-sm text-gray-400 mb-6">Complete backend solution with API integrations, caching, and security.</p>
+                    
+                    <div class="mb-8 flex items-baseline">
+                        <span class="text-4xl font-extrabold text-white tracking-tight price-amount" data-monthly="1299" data-yearly="999">$1,299</span>
+                        <span class="text-gray-400 text-sm ml-2 font-medium billing-period">/ month</span>
+                    </div>
+
+                    <ul class="space-y-4 text-sm text-gray-300 border-t border-gray-800 pt-6 mb-8">
+                        <li class="flex items-center gap-3">
+                            <svg class="w-5 h-5 text-purple-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <span>Unlimited Custom REST / GraphQL APIs</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <svg class="w-5 h-5 text-purple-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <span>PostgreSQL + Redis Caching Layer</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <svg class="w-5 h-5 text-purple-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <span>Celery Async Background Tasks</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <svg class="w-5 h-5 text-purple-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <span>Payment Gateways (Stripe/PayPal)</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <svg class="w-5 h-5 text-purple-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <span>Standard 30-Day Support</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <button onclick="openPlanModal('Full Stack & API')" class="w-full py-3.5 px-6 rounded-xl font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white transition-all text-sm shadow-lg shadow-purple-500/20">
+                    Get Started with Pro
+                </button>
+            </div>
+
+            <!-- Tier 3: Enterprise Architecture -->
+            <div class="glass-card rounded-3xl p-8 flex flex-col justify-between hover:border-gray-600 transition-all duration-300">
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-white">Enterprise Architecture</h3>
+                        <span class="text-xs font-medium text-gray-400 bg-gray-800 px-3 py-1 rounded-full">High Load</span>
+                    </div>
+                    <p class="text-sm text-gray-400 mb-6">Dedicated microservices, CI/CD automation, and cloud deployment.</p>
+                    
+                    <div class="mb-8 flex items-baseline">
+                        <span class="text-4xl font-extrabold text-white tracking-tight price-amount" data-monthly="2899" data-yearly="2299">$2,899</span>
+                        <span class="text-gray-400 text-sm ml-2 font-medium billing-period">/ month</span>
+                    </div>
+
+                    <ul class="space-y-4 text-sm text-gray-300 border-t border-gray-800 pt-6 mb-8">
+                        <li class="flex items-center gap-3">
+                            <svg class="w-5 h-5 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <span>Microservices Architecture (Docker / K8s)</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <svg class="w-5 h-5 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <span>Automated CI/CD Deployment Pipelines</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <svg class="w-5 h-5 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <span>High Availability & Auto-scaling Setup</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <svg class="w-5 h-5 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <span>Security Audits & Rate Limiting</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <svg class="w-5 h-5 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <span>Dedicated 24/7 SLA Support</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <button onclick="openPlanModal('Enterprise Architecture')" class="w-full py-3.5 px-6 rounded-xl font-semibold bg-gray-800 hover:bg-gray-700 text-white transition-all text-sm border border-gray-700">
+                    Contact Enterprise
+                </button>
+            </div>
+
+        </section>
+
+        <section class="max-w-5xl mx-auto px-6 mt-28">
+            <h2 class="text-2xl font-bold text-center text-white mb-12">System Features Breakdown</h2>
+            <div class="glass-card rounded-2xl overflow-hidden border border-gray-800">
+                <table class="w-full text-left text-sm text-gray-300">
+                    <thead class="bg-gray-900/80 text-gray-400 border-b border-gray-800">
+                        <tr>
+                            <th class="py-4 px-6 font-semibold">Core Capability</th>
+                            <th class="py-4 px-6 font-semibold text-center">Starter</th>
+                            <th class="py-4 px-6 font-semibold text-center text-blue-400">Pro</th>
+                            <th class="py-4 px-6 font-semibold text-center">Enterprise</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-800">
+                        <tr>
+                            <td class="py-4 px-6 font-medium text-white">Framework</td>
+                            <td class="py-4 px-6 text-center text-gray-400">Django / Flask</td>
+                            <td class="py-4 px-6 text-center text-blue-400 font-semibold">Django REST / FastAPI</td>
+                            <td class="py-4 px-6 text-center text-gray-400">Custom Microservices</td>
+                        </tr>
+                        <tr>
+                            <td class="py-4 px-6 font-medium text-white">Database Integration</td>
+                            <td class="py-4 px-6 text-center text-gray-400">Single Relational DB</td>
+                            <td class="py-4 px-6 text-center text-blue-400 font-semibold">PostgreSQL + Cache</td>
+                            <td class="py-4 px-6 text-center text-gray-400">Multi-DB Cluster / Sharding</td>
+                        </tr>
+                        <tr>
+                            <td class="py-4 px-6 font-medium text-white">API Performance Guarantee</td>
+                            <td class="py-4 px-6 text-center text-gray-400">&lt; 250ms</td>
+                            <td class="py-4 px-6 text-center text-blue-400 font-semibold">&lt; 80ms</td>
+                            <td class="py-4 px-6 text-center text-gray-400">&lt; 30ms</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer class="border-t border-gray-800/60 bg-gray-950/60 py-10">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-500">
+            <p>© 2026 DevEngine.io. All rights reserved.</p>
+            <div class="flex space-x-6">
+                <a href="#" class="hover:text-gray-300 transition-colors">Privacy Policy</a>
+                <a href="#" class="hover:text-gray-300 transition-colors">Terms of Service</a>
+                <a href="#" class="hover:text-gray-300 transition-colors">System Status</a>
+            </div>
+        </div>
+    </footer>
+
+    <div id="plan-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card rounded-3xl max-w-md w-full p-8 border border-gray-700 relative">
+            <button onclick="closePlanModal()" class="absolute top-5 right-5 text-gray-400 hover:text-white text-xl font-bold">
+                ✕
+            </button>
+            <h3 class="text-2xl font-bold text-white mb-2" id="modal-plan-name">Selected Plan</h3>
+            <p class="text-sm text-gray-400 mb-6">Enter your details and our team will get back to you with an architecture proposal.</p>
+
+            <form onsubmit="handleFormSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">YOUR NAME</label>
+                    <input type="text" required placeholder="John Doe" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">EMAIL ADDRESS</label>
+                    <input type="email" required placeholder="john@example.com" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 text-sm">
+                </div>
+                <button type="submit" class="w-full py-3.5 rounded-xl font-semibold bg-blue-600 hover:bg-blue-500 text-white transition-all text-sm mt-4">
+                    Confirm & Proceed
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Toggle billing state logic
+        const toggleBtn = document.getElementById('toggle-btn');
+        const toggleCircle = document.getElementById('toggle-circle');
+        const priceAmounts = document.querySelectorAll('.price-amount');
+        const billingPeriods = document.querySelectorAll('.billing-period');
+        const monthlyLabel = document.getElementById('monthly-label');
+        const yearlyLabel = document.getElementById('yearly-label');
+        
+        let isYearly = false;
+
+        toggleBtn.addEventListener('click', () => {
+            isYearly = !isYearly;
+            
+            // Animate toggle circle switch
+            if (isYearly) {
+                toggleCircle.classList.remove('translate-x-0');
+                toggleCircle.classList.add('translate-x-8');
+                monthlyLabel.classList.replace('text-gray-300', 'text-gray-500');
+                yearlyLabel.classList.replace('text-gray-400', 'text-white');
+            } else {
+                toggleCircle.classList.remove('translate-x-8');
+                toggleCircle.classList.add('translate-x-0');
+                monthlyLabel.classList.replace('text-gray-500', 'text-gray-300');
+                yearlyLabel.classList.replace('text-white', 'text-gray-400');
+            }
+
+            // Update price text values dynamically
+            priceAmounts.forEach(el => {
+                const monthlyVal = el.getAttribute('data-monthly');
+                const yearlyVal = el.getAttribute('data-yearly');
+                
+                el.style.opacity = '0';
+                setTimeout(() => {
+                    el.textContent = isYearly ? `$${Number(yearlyVal).toLocaleString()}` : `$${Number(monthlyVal).toLocaleString()}`;
+                    el.style.opacity = '1';
+                }, 150);
+            });
+        });
+
+        // Modal triggers
+        function openPlanModal(planName) {
+            document.getElementById('modal-plan-name').textContent = planName;
+            document.getElementById('plan-modal').classList.remove('hidden');
+        }
+
+        function closePlanModal() {
+            document.getElementById('plan-modal').classList.add('hidden');
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            alert('Thank you! Your request has been logged. We will reach out shortly.');
+            closePlanModal();
+        }
+    </script>
+</body>
+</html>

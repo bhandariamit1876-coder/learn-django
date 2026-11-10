@@ -1,0 +1,38 @@
+1) create a box
+   python -m venv venv
+
+2) inside a box
+  venv\Scripts\activate
+
+3)Install django
+    pip install django
+
+4) check and verify
+ python -m django --version
+
+5) start project
+  django-admin startproject [Project name] .
+
+6) to run server
+   python manage.py runserver
+
+7)to add another app
+  same as step 5 (except ".").
+
+8) If we created new app then to make sure django recognize such activity
+  -> Go to settings.py in mainproject
+  --> GO to installed apps
+  --> put application name at the end witn ","
+
+#) for urls(all is done inside main project)
+  --> go to urls.py
+  --> loacte urlaptterns
+  --> type syntax:-  path('adress/', view_function, name='nickname')
+
+#) in views.py
+   1)we add [import django.http from HttpResponse]
+
+#) If i wanna add html or template
+ I have to type syntax:-
+   class name(TemplateView):
+    template_name='appname/appname_list.html'
