@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #0f172a;
+            color: #ffffff;
+            position: relative;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        /* Ambient background glow effects */
+        body::before, body::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: 0;
+            opacity: 0.4;
+            animation: pulseGlow 10s infinite alternate ease-in-out;
+        }
+
+        body::before {
+            width: 350px;
+            height: 350px;
+            background: #3b82f6;
+            top: 10%;
+            left: 15%;
+        }
+
+        body::after {
+            width: 400px;
+            height: 400px;
+            background: #8b5cf6;
+            bottom: 10%;
+            right: 15%;
+            animation-delay: -5s;
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: scale(1) translate(0, 0); opacity: 0.3; }
+            100% { transform: scale(1.15) translate(20px, -20px); opacity: 0.5; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .container h1 {
+            font-size: 2.4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 30%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        form {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            max-width: 420px;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 6px;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            transition: all 0.3s ease;
+        }
+
+        form:focus-within {
+            border-color: rgba(59, 130, 246, 0.6);
+            box-shadow: 0 10px 35px rgba(59, 130, 246, 0.25);
+        }
+
+        form input[type="text"] {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            padding: 12px 16px;
+            color: #ffffff;
+            font-size: 0.95rem;
+        }
+
+        form input[type="text"]::placeholder {
+            color: #64748b;
+        }
+
+        form button {
+            background: #3b82f6;
+            border: none;
+            color: white;
+            padding: 10px 22px;
+            border-radius: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        form button:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .weather {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 420px;
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 28px;
+            padding: 32px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .left h2 {
+            font-size: 4rem;
+            font-weight: 700;
+            line-height: 1;
+            background: linear-gradient(180deg, #ffffff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .left h3 {
+            font-size: 1.35rem;
+            color: #94a3b8;
+            margin-top: 10px;
+            font-weight: 600;
+            text-transform: capitalize;
+            letter-spacing: 0.3px;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        .right .icon img {
+            width: 95px;
+            height: 95px;
+            filter: drop-shadow(0 8px 16px rgba(0,0,0,0.35));
+            animation: floatIcon 3s ease-in-out infinite;
+        }
+
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        .condition p {
+            font-size: 0.95rem;
+            color: #cbd5e1;
+            text-transform: capitalize;
+            font-weight: 500;
+        }
+
+        .condition p:last-child {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-top: 6px;
+        }
+    </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Weather App</h1>
+  </div>  
+
+  <form action="" method="POST">
+    {% csrf_token %}
+    <input type="text" name="city" placeholder="Enter city name" autocomplete="off">
+    <button type="submit">Search</button>
+  </form>
+
+  <div class="weather">
+    <div class="left">
+        <h2> {{temprature}}&#176; </h2>
+        <h3> {{city}} </h3>
+    </div>
+
+    <div class="right">
+        <div class="icon">
+            <p><img src="https://openweathermap.org/img/wn/{{icon}}@2x.png" width="100px" alt="Weather Icon"></p>
+        </div>
+        <div class="condition">
+            <p> {{description}} </p>
+            <p> {{day}} </p>
+        </div>
+    </div>
+  </div>
+</body>
+</html>
